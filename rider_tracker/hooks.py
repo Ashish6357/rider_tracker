@@ -123,6 +123,16 @@ app_license = "MIT"
 #		"on_trash": "method"
 #	}
 # }
+doc_events = {
+    "*": {
+        "on_update": "frappe.desk.notifications.clear_doctype_notifications"
+    }
+}
+
+socketio_events = {
+    "update_location": "rider_tracker.api.api.update_location"
+}
+
 
 # Scheduled Tasks
 # ---------------

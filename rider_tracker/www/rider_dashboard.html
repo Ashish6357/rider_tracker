@@ -1,0 +1,36 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<h1>Live Rider Tracking</h1>
+<div id="map" style="height: 500px;"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-o9N1jYjzyF0+dpT+I3Z4CGlGe2a1T/1QGkS2JgL1wEo="
+  crossorigin=""></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<script>
+  const map = L.map('map').setView([20.5937, 78.9629], 5); // Default India
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Fetch location from Frappe API
+  frappe.call({
+    method: "rider_tracker.api.api.get_latest_locations",
+    callback: function(r) {
+      const locations = r.message;
+      if (locations.length === 0) return;
+
+      locations.forEach(loc => {
+        const marker = L.marker([loc.lat, loc.lng]).addTo(map);
+        marker.bindPopup(`<b>${loc.rider}</b><br>${frappe.datetime.str_to_user(loc.timestamp)}`);
+      });
+
+      map.setView([locations[0].lat, locations[0].lng], 12);
+    }
+  });
+</script>
+{% endblock %}
